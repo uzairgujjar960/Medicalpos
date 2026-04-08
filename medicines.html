@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Management - POS System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* SweetAlert Dark Theme Customization */
+        .swal2-popup {
+            background: #1e293b !important;
+            color: white !important;
+            border: 1px solid #374151 !important;
+        }
+
+        @media print {
+            body { background-color: white !important; color: black !important; height: auto !important; overflow: visible !important; }
+            /* چھپانے والی چیزیں */
+            aside, .search-container, button, .action-col, #mobile-header, .grid, p, h1 { display: none !important; }
+            
+            /* صرف ٹیبل اور رپورٹ ٹائٹل دکھانے کے لیے */
+            main { padding: 0 !important; width: 100% !important; flex: none !important; }
+            .print-title { display: block !important; text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 20px; color: black !important; }
+            
+            .bg-\[\#1e293b\] { background-color: transparent !important; border: 1px solid #eee !important; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #ddd !important; padding: 8px !important; color: black !important; text-align: left !important; }
+            th { background-color: #f3f4f6 !important; text-transform: uppercase; font-size: 10px; }
+            .text-white, .text-gray-300, .text-gray-400, .text-green-400, .text-blue-400 { color: black !important; }
+            .bg-red-900\/50 { background-color: #fee2e2 !important; border: 1px solid #ef4444 !important; }
+        }
+
+        .print-title { display: none; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white font-sans flex flex-col md:flex-row h-screen overflow-hidden relative">
+    
+    <div id="mobile-header" class="md:hidden bg-[#1f2937] p-4 flex justify-between items-center border-b border-gray-700 w-full flex-shrink-0 z-40 relative shadow-md">
+        <div class="font-bold text-sm tracking-wide text-white flex items-center gap-2">
+            <i class="fas fa-clinic-medical text-indigo-400"></i> POS System
+        </div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none p-1">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out z-50 w-64 bg-[#1f2937] flex flex-col justify-between border-r border-gray-700 h-full flex-shrink-0 shadow-2xl md:shadow-none">
+        <div>
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-center font-bold text-sm tracking-wide shadow-md flex items-center justify-between md:justify-center gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-clinic-medical text-lg"></i> Point of Sale
+                </div>
+                <button id="close-sidebar-btn" class="md:hidden text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-6 flex flex-col gap-2 px-4 overflow-y-auto">
+                <a href="index.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-home w-5"></i> Dashboard
+                </a>
+                <a href="pos.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-shopping-cart w-5"></i> POS
+                </a>
+                <a href="medicines.html" class="bg-blue-600 text-white py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-pills w-5"></i> Medicines
+                </a>
+                <a href="customers.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-users w-5"></i> Customers
+                </a>
+                <a href="sales-history.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-file-invoice-dollar w-5"></i> Sales History
+                </a>
+                <a href="reports.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-chart-bar w-5"></i> Reports
+                </a>
+                <a href="purchase-order.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors">
+                    <i class="fas fa-clipboard-list w-5"></i> Purchase Order
+                </a>
+            </nav>
+        </div>
+        
+        <div class="p-3 bg-[#374151] m-4 rounded-xl flex items-center gap-3 shadow-lg">
+            <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center font-bold text-lg">A</div>
+            <div>
+                <div class="text-sm font-bold text-white">Muhammad Uzair</div>
+                <div class="text-xs text-gray-400">Administrator</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full relative">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity"></div>
+
+        <div class="print-title">Medicine Inventory Report</div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-1 flex items-center gap-3">
+                    <i class="fas fa-boxes-stacked text-blue-500"></i> Medicine Management
+                </h1>
+                <p class="text-gray-400 text-sm">Manage your medicine inventory</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                <button onclick="window.print()" class="w-full sm:w-auto justify-center bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-lg">
+                    <i class="fas fa-print"></i> Print Medicines
+                </button>
+                <button onclick="openModal()" class="w-full sm:w-auto justify-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-lg">
+                    <i class="fas fa-plus"></i> Add Medicine
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+            <div class="bg-blue-600 p-4 md:p-5 rounded-xl flex items-center gap-4 shadow-lg overflow-hidden">
+                <div class="w-10 md:w-12 h-10 md:h-12 bg-white rounded-lg flex items-center justify-center text-blue-600 text-lg md:text-xl shadow-sm flex-shrink-0"><i class="fas fa-capsules"></i></div>
+                <div class="overflow-hidden w-full">
+                    <div class="text-[10px] md:text-xs text-blue-100 font-bold uppercase tracking-wider mb-1 truncate">Total Medicines</div>
+                    <div id="total-medicines-count" class="text-xl md:text-2xl font-extrabold truncate">0</div>
+                </div>
+            </div>
+
+            <div class="bg-[#16a34a] p-4 md:p-5 rounded-xl flex items-center gap-4 shadow-lg overflow-hidden">
+                <div class="w-10 md:w-12 h-10 md:h-12 bg-white rounded-lg flex items-center justify-center text-[#16a34a] text-lg md:text-xl shadow-sm flex-shrink-0"><i class="fas fa-box"></i></div>
+                <div class="overflow-hidden w-full">
+                    <div class="text-[10px] md:text-xs text-green-100 font-bold uppercase tracking-wider mb-1 truncate">Total Stock</div>
+                    <div id="total-stock-count" class="text-xl md:text-2xl font-extrabold truncate">0</div>
+                </div>
+            </div>
+
+            <div class="bg-orange-600 p-4 md:p-5 rounded-xl flex items-center gap-4 shadow-lg overflow-hidden">
+                <div class="w-10 md:w-12 h-10 md:h-12 bg-white rounded-lg flex items-center justify-center text-orange-600 text-lg md:text-xl shadow-sm flex-shrink-0"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="overflow-hidden w-full">
+                    <div class="text-[10px] md:text-xs text-orange-100 font-bold uppercase tracking-wider mb-1 truncate">Low Stock Alert</div>
+                    <div id="low-stock-count" class="text-xl md:text-2xl font-extrabold truncate">0</div>
+                </div>
+            </div>
+
+            <div class="bg-purple-600 p-4 md:p-5 rounded-xl flex items-center gap-4 shadow-lg overflow-hidden">
+                <div class="w-10 md:w-12 h-10 md:h-12 bg-white rounded-lg flex items-center justify-center text-purple-600 text-lg md:text-xl shadow-sm flex-shrink-0"><i class="fas fa-sack-dollar"></i></div>
+                <div class="overflow-hidden w-full">
+                    <div class="text-[10px] md:text-xs text-purple-100 font-bold uppercase tracking-wider mb-1 truncate">Inventory Value</div>
+                    <div id="inventory-value-count" class="text-lg md:text-2xl font-extrabold truncate">PKR 0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 relative search-container">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="medicine-search" onkeyup="filterTable()" placeholder="Search by name, category, or scan barcode..." class="w-full max-w-md bg-[#1e293b] border border-gray-700 text-white rounded-lg py-2.5 pl-11 pr-4 focus:outline-none focus:border-blue-500 shadow-md">
+        </div>
+
+        <div class="bg-[#1e293b] border border-gray-700 rounded-xl overflow-x-auto shadow-lg w-full">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                    <tr class="bg-[#334155] border-b border-gray-700 text-gray-400 text-xs uppercase tracking-wider">
+                        <th class="p-3 md:p-4 font-semibold">Medicine</th>
+                        <th class="p-3 md:p-4 font-semibold">Category</th>
+                        <th class="p-3 md:p-4 font-semibold">Price</th>
+                        <th class="p-3 md:p-4 font-semibold">Stock</th>
+                        <th class="p-3 md:p-4 font-semibold">Expiry</th>
+                        <th class="p-3 md:p-4 font-semibold text-center action-col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="medicines-table-body" class="text-sm"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="medicineModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-[#1e293b] rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-700 flex flex-col max-h-[90vh]">
+            <div class="p-4 md:p-5 border-b border-gray-700 flex justify-between items-center bg-[#0f172a] flex-shrink-0">
+                <h2 id="modalTitle" class="text-lg md:text-xl font-bold text-white">Add New Medicine</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 md:p-6 overflow-y-auto flex-1">
+                <form id="medicineForm" onsubmit="saveMedicine(event)">
+                    <input type="hidden" id="medId">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Barcode / SKU</label>
+                        <div class="relative">
+                            <i class="fas fa-barcode absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="medBarcode" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 pl-10 pr-3 focus:outline-none focus:border-blue-500" placeholder="Scan barcode here">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Medicine Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="medName" required class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="e.g. Panadol 500mg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Category</label>
+                        <select id="medCategory" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500">
+                            <option value="Analgesic">Analgesic</option>
+                            <option value="Antibiotic">Antibiotic</option>
+                            <option value="Syrup">Syrup</option>
+                            <option value="Dermatology">Dermatology</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Selling Price (PKR) <span class="text-red-500">*</span></label>
+                            <input type="number" id="medPrice" step="0.01" required min="0" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Cost Price (PKR)</label>
+                            <input type="number" id="medCost" step="0.01" min="0" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-sm font-medium text-gray-300">Stock <span class="text-red-500">*</span></label>
+                                <div class="flex gap-2">
+                                    <label class="text-xs text-gray-400 cursor-pointer flex items-center"><input type="radio" name="stockType" value="unit" checked onchange="toggleStockType()" class="mr-1 accent-blue-500">Unit</label>
+                                    <label class="text-xs text-gray-400 cursor-pointer flex items-center"><input type="radio" name="stockType" value="box" onchange="toggleStockType()" class="mr-1 accent-blue-500">Box</label>
+                                </div>
+                            </div>
+                            <div id="unitInputGroup">
+                                <input type="number" id="medStock" min="0" required class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="Total Units">
+                            </div>
+                            <div id="boxInputGroup" class="hidden gap-2">
+                                <input type="number" id="medBoxes" min="0" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="Boxes">
+                                <input type="number" id="medUnitsPerBox" min="1" class="w-full bg-[#334155] border border-gray-600 text-white rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500" placeholder="Units/Box">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Expiry Date <span class="text-red-500">*</span></label>
+                            <input type="date" id="medExpiry" required class="w-full bg-[#334155] border border-gray-600 text-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-gray-700">
+                        <button type="button" onclick="closeModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-lg font-medium text-gray-300 bg-gray-700 sm:bg-transparent hover:bg-gray-600 sm:hover:bg-gray-700 transition-colors">Cancel</button>
+                        <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-lg">Save Medicine</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Professional Toast Alert
+        const showToast = (title, icon = 'success') => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#1e293b',
+                color: '#fff'
+            });
+            Toast.fire({ icon: icon, title: title });
+        };
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        closeSidebarBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        let medicinesData = [];
+
+        async function fetchMedicines() {
+            try {
+                const response = await fetch('medicines_api.php');
+                if (!response.ok) throw new Error("Failed to connect");
+                const result = await response.json();
+                if (result.status === 'success') {
+                    medicinesData = result.data;
+                    renderTable(medicinesData);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function formatDateForDisplay(dateString) {
+            if (!dateString || dateString === '0000-00-00') return "N/A";
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('medicines-table-body');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400">No medicines found.</td></tr>';
+                updateStats(); return;
+            }
+
+            data.forEach(med => {
+                let currentStock = parseInt(med.stock) || 0;
+                let stockHTML = currentStock <= 5
+                    ? `<span class="bg-red-900/50 text-red-400 py-1 px-3 rounded-full text-xs font-bold">${currentStock} unit</span>`
+                    : `<span class="text-gray-300">${currentStock} unit</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-700 hover:bg-[#334155]">
+                        <td class="p-3 md:p-4">
+                            <div class="font-bold text-white">${med.name}</div>
+                            ${med.barcode ? `<div class="text-[10px] text-gray-500 mt-1"><i class="fas fa-barcode"></i> ${med.barcode}</div>` : ''}
+                        </td>
+                        <td class="p-3 md:p-4 text-gray-300">${med.category || 'N/A'}</td>
+                        <td class="p-3 md:p-4">
+                            <div class="text-[#22c55e] font-bold">PKR ${parseFloat(med.price).toFixed(2)}</div>
+                            <div class="text-[10px] text-gray-500">Cost: PKR ${parseFloat(med.cost).toFixed(2)}</div>
+                        </td>
+                        <td class="p-3 md:p-4">${stockHTML}</td>
+                        <td class="p-3 md:p-4 text-gray-300">${formatDateForDisplay(med.expiry)}</td>
+                        <td class="p-3 md:p-4 text-center action-col">
+                            <button onclick="editMedicine(${med.id})" class="text-blue-400 hover:text-blue-300 mr-3"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteMedicine(${med.id})" class="text-red-400 hover:text-red-300"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>`;
+            });
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('total-medicines-count').innerText = medicinesData.length;
+            let totalStock = 0, lowStockCount = 0, inventoryValue = 0;
+            medicinesData.forEach(med => {
+                let stock = parseInt(med.stock) || 0;
+                totalStock += stock;
+                if (stock <= 5) lowStockCount++;
+                inventoryValue += (parseFloat(med.cost) || 0) * stock;
+            });
+            document.getElementById('total-stock-count').innerText = totalStock;
+            document.getElementById('low-stock-count').innerText = lowStockCount;
+            document.getElementById('inventory-value-count').innerText = 'PKR ' + inventoryValue.toLocaleString('en-PK', {minimumFractionDigits: 2});
+        }
+
+        function filterTable() {
+            const term = document.getElementById('medicine-search').value.toLowerCase();
+            const filtered = medicinesData.filter(m => (m.name||"").toLowerCase().includes(term) || (m.barcode||"").toLowerCase().includes(term) || (m.category||"").toLowerCase().includes(term));
+            renderTable(filtered);
+        }
+
+        async function deleteMedicine(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This medicine will be permanently removed!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch('medicines_api.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'delete', id: id })
+                        });
+                        const res = await response.json();
+                        if(res.status === 'success') {
+                            fetchMedicines();
+                            showToast('Medicine deleted successfully.', 'success');
+                        }
+                    } catch (error) { console.error(error); }
+                }
+            });
+        }
+
+        function toggleStockType() {
+            const isBox = document.querySelector('input[name="stockType"]:checked').value === 'box';
+            document.getElementById('unitInputGroup').classList.toggle('hidden', isBox);
+            document.getElementById('boxInputGroup').classList.toggle('hidden', !isBox);
+            document.getElementById('boxInputGroup').classList.toggle('flex', isBox);
+        }
+
+        function openModal() {
+            document.getElementById('medicineForm').reset();
+            document.getElementById('medId').value = '';
+            document.getElementById('modalTitle').innerText = 'Add New Medicine';
+            document.querySelector('input[name="stockType"][value="unit"]').checked = true;
+            toggleStockType();
+            document.getElementById('medicineModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('medicineModal').classList.add('hidden'); }
+
+        function editMedicine(id) {
+            const med = medicinesData.find(m => m.id == id);
+            if (med) {
+                document.getElementById('medId').value = med.id;
+                document.getElementById('medBarcode').value = med.barcode || '';
+                document.getElementById('medName').value = med.name || '';
+                document.getElementById('medCategory').value = med.category || 'Analgesic';
+                document.getElementById('medPrice').value = med.price || 0;
+                document.getElementById('medCost').value = med.cost || 0;
+                document.getElementById('medExpiry').value = med.expiry || '';
+                document.getElementById('medStock').value = med.stock || 0;
+                document.getElementById('modalTitle').innerText = 'Edit Medicine';
+                document.getElementById('medicineModal').classList.remove('hidden');
+            }
+        }
+
+        async function saveMedicine(event) {
+            event.preventDefault();
+            const id = document.getElementById('medId').value;
+            const isBox = document.querySelector('input[name="stockType"]:checked').value === 'box';
+            let stock = isBox 
+                ? (parseInt(document.getElementById('medBoxes').value)||0) * (parseInt(document.getElementById('medUnitsPerBox').value)||1) 
+                : parseInt(document.getElementById('medStock').value)||0;
+
+            const payload = {
+                action: 'save',
+                id: id,
+                barcode: document.getElementById('medBarcode').value.trim(),
+                name: document.getElementById('medName').value.trim(),
+                category: document.getElementById('medCategory').value,
+                price: document.getElementById('medPrice').value,
+                cost: document.getElementById('medCost').value,
+                stock: stock,
+                expiry: document.getElementById('medExpiry').value,
+                status: "Active"
+            };
+
+            try {
+                const response = await fetch('medicines_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    closeModal();
+                    fetchMedicines();
+                    showToast(id ? 'Medicine updated!' : 'Medicine added!');
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        fetchMedicines();
+    </script>
+</body>
+</html>

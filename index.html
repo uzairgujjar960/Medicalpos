@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - POS System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#0f172a] text-white font-sans flex flex-col md:flex-row h-screen overflow-hidden relative">
+
+    <aside id="sidebar" class="absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out z-50 w-64 bg-[#1f2937] flex flex-col justify-between border-r border-gray-700 h-full flex-shrink-0 shadow-2xl md:shadow-none">
+        <div>
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-center font-bold text-sm tracking-wide shadow-md flex items-center justify-between md:justify-center gap-2">
+                <div class="flex items-center gap-2"><i class="fas fa-clinic-medical text-lg"></i> Point of Sale</div>
+            </div>
+            <nav class="mt-6 flex flex-col gap-2 px-4 overflow-y-auto">
+                <a href="index.html" class="bg-blue-600 text-white py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-home w-5"></i> Dashboard</a>
+                <a href="pos.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-shopping-cart w-5"></i> POS</a>
+                <a href="medicines.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-pills w-5"></i> Medicines</a>
+                <a href="customers.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-users w-5"></i> Customers</a>
+                <a href="sales-history.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-file-invoice-dollar w-5"></i> Sales History</a>
+                <a href="reports.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-chart-bar w-5"></i> Reports</a>
+                <a href="purchase-order.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-clipboard-list w-5"></i> Purchase Order</a>
+            </nav>
+        </div>
+        <div class="p-3 bg-[#374151] m-4 rounded-xl flex items-center gap-3 shadow-lg">
+            <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-lg text-white">A</div>
+            <div>
+                <div class="text-sm font-bold text-white">Admin Panel</div>
+                <div class="text-xs text-gray-400 italic">Administrator</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full">
+        <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold">Welcome Back!</h1>
+                <p class="text-gray-400 text-sm">Real-time performance overview of your store.</p>
+            </div>
+            <div class="text-left md:text-right">
+                <div id="live-date" class="text-indigo-400 font-bold text-sm uppercase tracking-wider"></div>
+                <div id="live-time" class="text-2xl font-black text-white tabular-nums"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-emerald-500 to-green-800 p-6 rounded-2xl border border-green-400/30 shadow-lg shadow-green-900/20 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-7xl"><i class="fas fa-wallet"></i></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fas fa-wallet text-white"></i></div>
+                    <div><p class="text-xs text-green-100 uppercase font-bold tracking-wide">Net Revenue</p><h3 class="text-xl font-black" id="stat-total-rev">PKR 0</h3></div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-800 p-6 rounded-2xl border border-blue-400/30 shadow-lg shadow-blue-900/20 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-7xl"><i class="fas fa-chart-line"></i></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fas fa-chart-line text-white"></i></div>
+                    <div><p class="text-xs text-blue-100 uppercase font-bold tracking-wide">Today's Sales</p><h3 class="text-xl font-black" id="stat-today-rev">PKR 0</h3></div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-fuchsia-800 p-6 rounded-2xl border border-purple-400/30 shadow-lg shadow-purple-900/20 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-7xl"><i class="fas fa-pills"></i></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fas fa-pills text-white"></i></div>
+                    <div><p class="text-xs text-purple-100 uppercase font-bold tracking-wide">Medicines</p><h3 class="text-xl font-black" id="stat-medicines">0</h3></div>
+                </div>
+            </div>
+            <div class="bg-gradient-to-br from-orange-500 to-red-800 p-6 rounded-2xl border border-orange-400/30 shadow-lg shadow-orange-900/20 text-white relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10 text-7xl"><i class="fas fa-users"></i></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl backdrop-blur-sm"><i class="fas fa-users text-white"></i></div>
+                    <div><p class="text-xs text-orange-100 uppercase font-bold tracking-wide">Customers</p><h3 class="text-xl font-black" id="stat-customers">0</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="lg:col-span-2 bg-[#1e293b] p-6 rounded-2xl border border-gray-700 shadow-lg">
+                <h3 class="font-bold text-lg mb-4"><i class="fas fa-chart-area mr-2 text-indigo-400"></i> Weekly Sales Trend</h3>
+                <canvas id="salesChart" height="150"></canvas>
+            </div>
+
+            <div class="flex flex-col gap-6">
+                <div class="bg-[#1e293b] p-5 rounded-2xl border border-gray-700 shadow-lg">
+                    <h3 class="font-bold text-sm mb-4 text-green-400"><i class="fas fa-crown mr-2"></i> Top 5 Selling</h3>
+                    <ul id="top-selling-list" class="space-y-3 text-xs"></ul>
+                </div>
+                <div class="bg-[#1e293b] p-5 rounded-2xl border border-gray-700 shadow-lg">
+                    <h3 class="font-bold text-sm mb-4 text-red-400"><i class="fas fa-arrow-trend-down mr-2"></i> Low Selling</h3>
+                    <ul id="low-selling-list" class="space-y-3 text-xs"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#1e293b] border border-gray-700 rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-[#1e293b]">
+                <h3 class="font-bold text-lg"><i class="fas fa-history mr-2 text-blue-400"></i> Recent Transactions</h3>
+                <a href="sales-history.html" class="text-xs text-blue-400 hover:underline">View All</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-[#334155] text-gray-400 text-[10px] uppercase tracking-widest">
+                            <th class="p-4 font-semibold">Invoice No</th>
+                            <th class="p-4 font-semibold">Customer</th>
+                            <th class="p-4 font-semibold">Date</th>
+                            <th class="p-4 font-semibold text-right">Amount</th>
+                            <th class="p-4 font-semibold text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-sales-body" class="text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Real-time Clock Function
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('live-date').innerText = now.toLocaleDateString('en-US', options);
+            document.getElementById('live-time').innerText = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch('dashboard_api.php');
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    document.getElementById('stat-total-rev').innerText = 'PKR ' + parseFloat(result.stats.total_revenue).toLocaleString();
+                    document.getElementById('stat-today-rev').innerText = 'PKR ' + parseFloat(result.stats.today_revenue).toLocaleString();
+                    document.getElementById('stat-medicines').innerText = result.stats.total_medicines;
+                    document.getElementById('stat-customers').innerText = result.stats.total_customers;
+
+                    const tbody = document.getElementById('recent-sales-body');
+                    tbody.innerHTML = '';
+                    result.recent_sales.forEach(sale => {
+                        const sClass = sale.status === 'Completed' ? 'bg-green-900/50 text-green-400 border-green-800' : 'bg-red-900/50 text-red-400 border-red-800';
+                        tbody.innerHTML += `
+                            <tr class="border-b border-gray-700/50 hover:bg-[#334155] transition-colors">
+                                <td class="p-4 font-bold text-blue-400">${sale.invoice_no}</td>
+                                <td class="p-4 text-white">${sale.customer_name}</td>
+                                <td class="p-4 text-gray-400 text-xs">${sale.sale_date.split(' ')[0]}</td>
+                                <td class="p-4 text-right font-bold text-green-400">PKR ${parseFloat(sale.total_amount).toLocaleString()}</td>
+                                <td class="p-4 text-center"><span class="px-2 py-1 rounded-full text-[10px] font-bold border ${sClass}">${sale.status}</span></td>
+                            </tr>`;
+                    });
+
+                    const topList = document.getElementById('top-selling-list');
+                    topList.innerHTML = result.top_selling.length ? '' : '<li class="text-gray-500">No data</li>';
+                    result.top_selling.forEach(m => {
+                        topList.innerHTML += `<li class="flex justify-between items-center p-2 bg-[#0f172a] rounded-lg"><span>${m.name}</span><span class="bg-green-600 px-2 py-0.5 rounded font-bold">${m.total_qty} Sold</span></li>`;
+                    });
+
+                    const lowList = document.getElementById('low-selling-list');
+                    lowList.innerHTML = result.low_selling.length ? '' : '<li class="text-gray-500">No data</li>';
+                    result.low_selling.forEach(m => {
+                        lowList.innerHTML += `<li class="flex justify-between items-center p-2 bg-[#0f172a] rounded-lg"><span>${m.name}</span><span class="bg-red-600/30 text-red-400 px-2 py-0.5 rounded font-bold">${m.total_qty} Sold</span></li>`;
+                    });
+
+                    const ctx = document.getElementById('salesChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: result.weekly_sales.map(s => s.date),
+                            datasets: [{
+                                label: 'Revenue',
+                                data: result.weekly_sales.map(s => s.total),
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { grid: { display: false } } } }
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+        loadDashboard();
+    </script>
+</body>
+</html>

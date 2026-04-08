@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales History - Professional POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-[#0f172a] text-white font-sans flex flex-col md:flex-row h-screen overflow-hidden relative">
+    
+    <div id="mobile-header" class="md:hidden bg-[#1f2937] p-4 flex justify-between items-center border-b border-gray-700 w-full flex-shrink-0 z-40 relative shadow-md">
+        <div class="font-bold text-sm tracking-wide text-white flex items-center gap-2">
+            <i class="fas fa-clinic-medical text-indigo-400"></i> POS System
+        </div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none p-1">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out z-50 w-64 bg-[#1f2937] flex flex-col justify-between border-r border-gray-700 h-full flex-shrink-0 shadow-2xl md:shadow-none">
+        <div>
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-center font-bold text-sm tracking-wide shadow-md flex items-center justify-between md:justify-center gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-clinic-medical text-lg"></i> Point of Sale
+                </div>
+                <button id="close-sidebar-btn" class="md:hidden text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mt-6 flex flex-col gap-2 px-4 overflow-y-auto">
+                <a href="index.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-home w-5"></i> Dashboard</a>
+                <a href="pos.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-shopping-cart w-5"></i> POS</a>
+                <a href="medicines.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-pills w-5"></i> Medicines</a>
+                <a href="customers.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-users w-5"></i> Customers</a>
+                <a href="sales-history.html" class="bg-blue-600 text-white py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-file-invoice-dollar w-5"></i> Sales History</a>
+                <a href="reports.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-chart-bar w-5"></i> Reports</a>
+                <a href="purchase-order.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-clipboard-list w-5"></i> Purchase Order</a>
+            </nav>
+        </div>
+        
+        <div class="p-3 bg-[#374151] m-4 rounded-xl flex items-center gap-3 shadow-lg">
+            <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-lg">U</div>
+            <div>
+                <div class="text-sm font-bold text-white">Muhammad Uzair</div>
+                <div class="text-xs text-gray-400">Administrator</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full relative">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+        <div class="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Sales History</h1>
+                <p class="text-gray-400 text-sm">View and manage all sales transactions</p>
+            </div>
+            <div class="w-full sm:w-auto bg-[#1e293b] border border-gray-700 px-4 py-2.5 rounded-lg shadow-md flex justify-between items-center">
+                <span class="text-gray-400 text-sm mr-3">Filtered Total:</span>
+                <span id="filtered-total" class="text-[#22c55e] font-bold text-lg md:text-xl">PKR 0.00</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4 mb-6 bg-[#1e293b] p-4 rounded-xl border border-gray-700 shadow-md flex-wrap items-end">
+            <div class="flex-1 w-full md:w-auto min-w-[200px]">
+                <label class="text-xs text-gray-400 mb-1 block">Search Invoice/Customer</label>
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" onkeyup="filterSales()" placeholder="Search..." class="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg py-2 pl-9 pr-3 focus:border-blue-500">
+                </div>
+            </div>
+            <div class="w-full md:w-auto flex-1">
+                <label class="text-xs text-gray-400 mb-1 block">From Date</label>
+                <input type="date" id="fromDate" onchange="filterSales()" class="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg py-2 px-3 focus:border-blue-500 [color-scheme:dark]">
+            </div>
+            <div class="w-full md:w-auto flex-1">
+                <label class="text-xs text-gray-400 mb-1 block">To Date</label>
+                <input type="date" id="toDate" onchange="filterSales()" class="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg py-2 px-3 focus:border-blue-500 [color-scheme:dark]">
+            </div>
+            <div class="w-full md:w-auto flex-1">
+                <label class="text-xs text-gray-400 mb-1 block">Payment Method</label>
+                <select id="paymentMethod" onchange="filterSales()" class="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg py-2 px-3 focus:border-blue-500">
+                    <option value="All Methods">All Methods</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Card">Card</option>
+                </select>
+            </div>
+            <div class="w-full md:w-auto">
+                <button onclick="clearFilters()" class="w-full bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium shadow-md">Clear</button>
+            </div>
+        </div>
+
+        <div class="bg-[#1e293b] border border-gray-700 rounded-xl overflow-x-auto shadow-lg w-full">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                    <tr class="bg-[#334155] border-b border-gray-700 text-gray-400 text-xs uppercase tracking-wider">
+                        <th class="p-4 font-semibold">Invoice No</th>
+                        <th class="p-4 font-semibold">Customer Name</th>
+                        <th class="p-4 font-semibold text-center">Date</th>
+                        <th class="p-4 font-semibold text-center">Payment</th>
+                        <th class="p-4 font-semibold text-right">Total Amount</th>
+                        <th class="p-4 font-semibold text-center">Status</th>
+                        <th class="p-4 font-semibold text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-table-body" class="text-sm">
+                    <tr><td colspan="7" class="p-8 text-center text-gray-500 italic">Loading sales records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="detailsModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] p-4">
+        <div class="bg-[#1e293b] rounded-xl shadow-2xl w-full max-w-lg border border-gray-700 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-[#0f172a]">
+                <h3 class="text-lg font-bold text-blue-400"><i class="fas fa-file-invoice mr-2"></i> Invoice Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <div id="invoice-info" class="mb-4 text-sm space-y-1 text-gray-300 border-l-4 border-blue-500 pl-4 py-1"></div>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-700 text-gray-400 uppercase"><th class="pb-2">Medicine</th><th class="pb-2 text-center">Qty</th><th class="pb-2 text-right">Price</th><th class="pb-2 text-right">Total</th></tr>
+                    </thead>
+                    <tbody id="items-list-body" class="text-gray-300"></tbody>
+                </table>
+            </div>
+            <div class="p-4 bg-[#0f172a] border-t border-gray-700 flex justify-end">
+                <button onclick="closeModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-bold text-sm transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="returnModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-[#1e293b] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] w-full max-w-md border border-gray-700 overflow-hidden transform scale-95 transition-transform duration-300" id="returnModalContent">
+            <div class="p-6 text-center">
+                <div class="w-20 h-20 bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5 border-2 border-red-500/20 shadow-lg shadow-red-900/10">
+                    <i class="fas fa-exclamation-triangle text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white mb-2">Confirm Return?</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-8">Are you sure you want to return invoice (<span id="returnInvDisplay" class="font-bold text-blue-400"></span>)?<br><span class="text-red-400 font-medium">This will restore items to stock.</span></p>
+                <div class="flex gap-3">
+                    <button onclick="closeReturnModal()" class="flex-1 bg-[#334155] hover:bg-[#475569] text-gray-300 py-3 rounded-xl font-bold transition-all border border-gray-600">Cancel</button>
+                    <button id="confirmReturnBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-bold transition-all shadow-lg shadow-red-900/30 flex items-center justify-center gap-2">
+                        <i class="fas fa-check-circle"></i> Yes, Return
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); sidebarOverlay.classList.toggle('hidden'); }
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        closeSidebarBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        let allSales = [];
+        let currentReturnInv = null;
+
+        async function fetchSales() {
+            try {
+                const response = await fetch('sales_api.php');
+                const result = await response.json();
+                if(result.status === 'success') {
+                    allSales = result.data || [];
+                    renderTable(allSales);
+                }
+            } catch (error) { console.error("Fetch Error:", error); }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('sales-table-body');
+            tbody.innerHTML = '';
+            let filteredTotal = 0;
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-500 italic">No matching records found.</td></tr>';
+                document.getElementById('filtered-total').innerText = "PKR 0.00";
+                return;
+            }
+
+            data.forEach(sale => {
+                const amount = parseFloat(sale.total_amount);
+                if(sale.status === 'Completed') filteredTotal += amount;
+
+                // Professional Method Badge
+                let methodBadge = '';
+                if(sale.payment_method === 'Card') {
+                    methodBadge = `<span class="bg-indigo-900/50 text-indigo-400 border border-indigo-500/30 px-2.5 py-1 rounded text-[10px] font-bold uppercase"><i class="fas fa-credit-card mr-1"></i> Card</span>`;
+                } else {
+                    methodBadge = `<span class="bg-emerald-900/50 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded text-[10px] font-bold uppercase"><i class="fas fa-money-bill-wave mr-1"></i> Cash</span>`;
+                }
+
+                let statusBadge = sale.status === 'Completed' 
+                    ? `<span class="bg-green-900/50 text-[#22c55e] rounded-full px-3 py-1 text-[10px] font-bold border border-green-800 uppercase tracking-tight">Completed</span>`
+                    : `<span class="bg-red-900/50 text-red-400 rounded-full px-3 py-1 text-[10px] font-bold border border-red-800 uppercase tracking-tight">Returned</span>`;
+
+                let returnBtn = sale.status === 'Completed'
+                    ? `<button onclick="openReturnModal('${sale.invoice_no}')" class="bg-red-600/20 text-red-400 border border-red-600 px-2 py-1.5 rounded hover:bg-red-600 hover:text-white transition-all text-xs font-bold flex items-center gap-1"><i class="fas fa-undo"></i> Return</button>`
+                    : `<span class="text-gray-600 text-xs italic"><i class="fas fa-lock"></i> Locked</span>`;
+                
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-700 hover:bg-[#334155] transition-colors group">
+                        <td class="p-4 text-blue-400 font-bold tracking-wide">${sale.invoice_no}</td>
+                        <td class="p-4 text-white font-medium group-hover:text-blue-200">${sale.customer_name}</td>
+                        <td class="p-4 text-center text-gray-400 text-xs">${sale.sale_date.split(' ')[0]}</td>
+                        <td class="p-4 text-center">${methodBadge}</td>
+                        <td class="p-4 text-right text-[#22c55e] font-black tracking-tight">PKR ${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                        <td class="p-4 text-center">${statusBadge}</td>
+                        <td class="p-4 text-center flex justify-center gap-2">
+                            <button onclick="viewItems('${sale.invoice_no}', '${sale.customer_name}', '${sale.sale_date}')" class="bg-blue-600/20 text-blue-400 border border-blue-600 px-3 py-1.5 rounded hover:bg-blue-600 hover:text-white transition-all text-xs font-bold flex items-center gap-1"><i class="fas fa-eye"></i> View</button>
+                            ${returnBtn}
+                        </td>
+                    </tr>`;
+            });
+
+            document.getElementById('filtered-total').innerText = `PKR ${filteredTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        }
+
+        function filterSales() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const method = document.getElementById('paymentMethod').value;
+
+            const filtered = allSales.filter(sale => {
+                const matchesSearch = (sale.invoice_no && sale.invoice_no.toLowerCase().includes(search)) || (sale.customer_name && sale.customer_name.toLowerCase().includes(search));
+                const matchesMethod = method === "All Methods" || sale.payment_method === method;
+                const saleDateOnly = sale.sale_date.split(' ')[0];
+                let matchesDate = true;
+                if (fromDate) matchesDate = matchesDate && (saleDateOnly >= fromDate);
+                if (toDate) matchesDate = matchesDate && (saleDateOnly <= toDate);
+                return matchesSearch && matchesMethod && matchesDate;
+            });
+            renderTable(filtered);
+        }
+
+        function openReturnModal(invNo) {
+            currentReturnInv = invNo;
+            document.getElementById('returnInvDisplay').innerText = invNo;
+            const modal = document.getElementById('returnModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeReturnModal() { document.getElementById('returnModal').classList.add('hidden'); }
+
+        document.getElementById('confirmReturnBtn').onclick = async function() {
+            if(!currentReturnInv) return;
+            try {
+                const response = await fetch('sales_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'return_sale', invoice_no: currentReturnInv })
+                });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    Swal.fire('Returned!', 'Sale has been returned and stock restored.', 'success');
+                    closeReturnModal();
+                    fetchSales();
+                }
+            } catch (e) { console.error(e); }
+        };
+
+        async function viewItems(invNo, cust, date) {
+            const info = document.getElementById('invoice-info');
+            info.innerHTML = `<div><strong>Invoice:</strong> ${invNo}</div><div><strong>Customer:</strong> ${cust}</div><div><strong>Date:</strong> ${date}</div>`;
+            const tbody = document.getElementById('items-list-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center">Loading items...</td></tr>';
+            document.getElementById('detailsModal').classList.remove('hidden');
+
+            try {
+                const res = await fetch(`sales_api.php?invoice_no=${invNo}`).then(r => r.json());
+                if(res.status === 'success') {
+                    tbody.innerHTML = '';
+                    res.data.forEach(item => {
+                        let total = parseFloat(item.quantity) * parseFloat(item.price_at_sale);
+                        tbody.innerHTML += `
+                            <tr class="border-b border-gray-800/50">
+                                <td class="py-3 font-bold text-white text-xs">${item.name}</td>
+                                <td class="p-3 text-center">${item.quantity}</td>
+                                <td class="py-3 text-right text-gray-400">${parseFloat(item.price_at_sale).toFixed(2)}</td>
+                                <td class="py-3 text-right font-bold text-green-400">PKR ${total.toFixed(2)}</td>
+                            </tr>`;
+                    });
+                }
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-red-400">Error!</td></tr>'; }
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            document.getElementById('paymentMethod').value = 'All Methods';
+            renderTable(allSales);
+        }
+
+        function closeModal() { document.getElementById('detailsModal').classList.add('hidden'); }
+        fetchSales();
+    </script>
+</body>
+</html>

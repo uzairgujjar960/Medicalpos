@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - POS System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            body { background-color: white !important; color: black !important; }
+            aside, .no-print, #stats-container, #mobile-header { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; width: 100% !important; flex: none !important; }
+            .bg-\[\#1e293b\], .bg-\[\#0f172a\] { background-color: white !important; border: none !important; box-shadow: none !important;}
+            .text-white, .text-gray-300, .text-gray-400 { color: black !important; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border-bottom: 1px solid #ddd !important; padding: 10px !important; color: black !important; }
+            th { background-color: #f3f4f6 !important; font-weight: bold !important; border-bottom: 2px solid #000 !important; }
+            .print-total-row td { border-top: 2px solid #000 !important; font-size: 16px; font-weight: bold; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white font-sans flex flex-col md:flex-row h-screen overflow-hidden relative">
+    
+    <div id="mobile-header" class="md:hidden bg-[#1f2937] p-4 flex justify-between items-center border-b border-gray-700 w-full flex-shrink-0 z-40 relative shadow-md">
+        <div class="font-bold text-sm text-white flex items-center gap-2">
+            <i class="fas fa-clinic-medical text-indigo-400"></i> POS System
+        </div>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white p-1">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <aside id="sidebar" class="absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out z-50 w-64 bg-[#1f2937] flex flex-col justify-between border-r border-gray-700 h-full flex-shrink-0 shadow-2xl md:shadow-none">
+        <div>
+            <div class="p-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-center font-bold text-sm shadow-md flex items-center justify-between md:justify-center gap-2">
+                <div class="flex items-center gap-2"><i class="fas fa-clinic-medical text-lg"></i> Point of Sale</div>
+                <button id="close-sidebar-btn" class="md:hidden text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <nav class="mt-6 flex flex-col gap-2 px-4 overflow-y-auto">
+                <a href="index.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-home w-5"></i> Dashboard</a>
+                <a href="pos.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-shopping-cart w-5"></i> POS</a>
+                <a href="medicines.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-pills w-5"></i> Medicines</a>
+                <a href="customers.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-users w-5"></i> Customers</a>
+                <a href="sales-history.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-file-invoice-dollar w-5"></i> Sales History</a>
+                <a href="reports.html" class="bg-blue-600 text-white py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-chart-bar w-5"></i> Reports</a>
+                <a href="purchase-order.html" class="text-gray-300 hover:bg-gray-700 py-2.5 px-4 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors"><i class="fas fa-clipboard-list w-5"></i> Purchase Order</a>
+            </nav>
+        </div>
+        <div class="p-3 bg-[#374151] m-4 rounded-xl flex items-center gap-3 shadow-lg no-print">
+            <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center font-bold text-lg">U</div>
+            <div>
+                <div class="text-sm font-bold text-white">Muhammad Uzair</div>
+                <div class="text-xs text-gray-400">Administrator</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto w-full relative">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity"></div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">Reports & Analytics</h1>
+                <p class="text-gray-400 text-sm no-print">Database se real-time reports dekhein</p>
+            </div>
+            <button onclick="window.print()" class="w-full sm:w-auto justify-center no-print bg-[#334155] hover:bg-[#475569] text-white px-5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 border border-gray-600 shadow-lg">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+        </div>
+
+        <div class="bg-[#1e293b] p-4 rounded-xl border border-gray-700 mb-6 flex flex-col lg:flex-row items-start lg:items-center gap-4 no-print">
+            <div class="w-full lg:flex-1">
+                <label class="text-xs text-gray-400 mb-1 block">Report Type</label>
+                <div class="flex bg-[#0f172a] rounded-lg p-1 min-w-max" id="report-tabs">
+                    <button onclick="switchReport('sales')" id="tab-sales" class="flex-1 bg-blue-600 text-white py-2 px-3 rounded-md text-sm font-medium transition-colors">All Sales</button>
+                    <button onclick="switchReport('today')" id="tab-today" class="flex-1 text-gray-400 py-2 px-3 text-sm font-medium hover:text-white transition-colors">Today's Sales</button>
+                    <button onclick="switchReport('inventory')" id="tab-inventory" class="flex-1 text-gray-400 py-2 px-3 text-sm font-medium hover:text-white transition-colors">Inventory</button>
+                    <button onclick="switchReport('lowstock')" id="tab-lowstock" class="flex-1 text-gray-400 py-2 px-3 text-sm font-medium hover:text-white transition-colors">Low Stock</button>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                <div class="date-filters flex-1">
+                    <label class="text-xs text-gray-400 mb-1 block">Start Date</label>
+                    <input type="date" id="startDate" onchange="generateReport()" class="w-full bg-[#0f172a] border border-gray-700 text-white rounded-lg py-2 px-4 focus:border-blue-500 [color-scheme:dark]">
+                </div>
+                <div class="date-filters flex-1">
+                    <label class="text-xs text-gray-400 mb-1 block">End Date</label>
+                    <input type="date" id="endDate" onchange="generateReport()" class="w-full bg-[#0f172a] border border-gray-700 text-white rounded-lg py-2 px-4 focus:border-blue-500 [color-scheme:dark]">
+                </div>
+            </div>
+        </div>
+
+        <div id="stats-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8 no-print"></div>
+
+        <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 md:p-6 print-box w-full overflow-hidden">
+            <h3 id="report-title" class="text-lg md:text-xl font-bold text-white mb-1">Transaction History</h3>
+            <p id="report-subtitle" class="text-xs md:text-sm text-gray-400 mb-4 md:mb-6">Data loaded from database</p>
+            
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead id="table-head"></thead>
+                    <tbody id="table-body" class="text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        function toggleSidebar() { sidebar.classList.toggle('-translate-x-full'); sidebarOverlay.classList.toggle('hidden'); }
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        document.getElementById('close-sidebar-btn').addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        let currentReport = 'sales';
+        let salesData = [];
+        let inventoryData = [];
+
+        async function loadDatabaseData() {
+            try {
+                const [salesRes, medsRes] = await Promise.all([
+                    fetch('sales_api.php').then(r => r.json()),
+                    fetch('medicines_api.php').then(r => r.json())
+                ]);
+                if(salesRes.status === 'success') salesData = salesRes.data;
+                if(medsRes.status === 'success') inventoryData = medsRes.data;
+                generateReport();
+            } catch (error) {
+                console.error("Fetch Error:", error);
+            }
+        }
+
+        function switchReport(type) {
+            currentReport = type;
+            document.querySelectorAll('#report-tabs button').forEach(btn => {
+                btn.classList.toggle('bg-blue-600', btn.id === `tab-${type}`);
+                btn.classList.toggle('text-white', btn.id === `tab-${type}`);
+                btn.classList.toggle('text-gray-400', btn.id !== `tab-${type}`);
+            });
+            document.querySelectorAll('.date-filters').forEach(el => el.style.display = (type === 'sales' || type === 'today') ? 'block' : 'none');
+            generateReport();
+        }
+
+        function generateReport() {
+            const statsContainer = document.getElementById('stats-container');
+            const thead = document.getElementById('table-head');
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (currentReport === 'sales' || currentReport === 'today') {
+                document.getElementById('report-title').innerText = currentReport === 'today' ? "Today's Sales Report" : "Sales Transaction History";
+                const start = currentReport === 'today' ? new Date().toISOString().split('T')[0] : document.getElementById('startDate').value;
+                const end = currentReport === 'today' ? new Date().toISOString().split('T')[0] : document.getElementById('endDate').value;
+
+                let totalRev = 0, completedCount = 0, returnedCount = 0;
+                const filteredSales = salesData.filter(sale => {
+                    const sDate = sale.sale_date.split(' ')[0];
+                    return sDate >= start && sDate <= end;
+                });
+
+                filteredSales.forEach(sale => {
+                    if (sale.status === 'Completed') {
+                        totalRev += parseFloat(sale.total_amount);
+                        completedCount++;
+                    } else {
+                        returnedCount++;
+                    }
+                });
+
+                // Total Invoices ginti update ki gayi hai
+                statsContainer.innerHTML = `
+                    <div class="bg-[#16a34a] p-4 rounded-xl shadow-lg"><div class="text-xs text-green-100 font-bold mb-1 uppercase">Net Revenue</div><div class="text-2xl font-black">PKR ${totalRev.toLocaleString()}</div></div>
+                    <div class="bg-blue-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-blue-100 font-bold mb-1 uppercase">Total Invoices</div><div class="text-2xl font-black">${filteredSales.length}</div></div>
+                    <div class="bg-indigo-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-indigo-100 font-bold mb-1 uppercase">Completed</div><div class="text-2xl font-black">${completedCount}</div></div>
+                    <div class="bg-red-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-red-100 font-bold mb-1 uppercase">Returned</div><div class="text-2xl font-black">${returnedCount}</div></div>`;
+
+                thead.innerHTML = `<tr class="text-gray-400 text-xs border-b border-gray-700"><th class="pb-3">Invoice No</th><th class="pb-3">Customer</th><th class="pb-3 text-center">Status</th><th class="pb-3 text-right">Amount</th></tr>`;
+                filteredSales.forEach(sale => {
+                    tbody.innerHTML += `<tr class="border-b border-gray-700/50 hover:bg-[#334155] transition-colors"><td class="py-3 text-blue-400 font-medium">${sale.invoice_no}</td><td class="py-3 text-gray-300">${sale.customer_name}</td><td class="py-3 text-center font-bold ${sale.status === 'Completed' ? 'text-green-400' : 'text-red-400'}">${sale.status}</td><td class="py-3 text-white font-bold text-right">PKR ${parseFloat(sale.total_amount).toLocaleString()}</td></tr>`;
+                });
+
+            } else {
+                // Inventory Logic (Same as your previous professional interface)
+                const isLow = currentReport === 'lowstock';
+                document.getElementById('report-title').innerText = isLow ? "Low Stock Report" : "Inventory Valuation";
+                const list = isLow ? inventoryData.filter(i => parseInt(i.stock) <= 5) : inventoryData;
+                let totalStock = 0, totalVal = 0;
+                list.forEach(i => { totalStock += parseInt(i.stock); totalVal += (parseInt(i.stock) * parseFloat(i.price)); });
+
+                statsContainer.innerHTML = `
+                    <div class="bg-blue-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-blue-100 font-bold mb-1 uppercase">Products</div><div class="text-2xl font-black">${list.length}</div></div>
+                    <div class="bg-purple-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-purple-100 font-bold mb-1 uppercase">Units</div><div class="text-2xl font-black">${totalStock}</div></div>
+                    <div class="bg-green-600 p-4 rounded-xl shadow-lg"><div class="text-xs text-green-100 font-bold mb-1 uppercase">Value</div><div class="text-2xl font-black">PKR ${totalVal.toLocaleString()}</div></div>`;
+
+                thead.innerHTML = `<tr class="text-gray-400 text-xs border-b border-gray-700"><th class="pb-3">Medicine</th><th class="pb-3 text-center">Unit Price</th><th class="pb-3 text-center">Stock</th><th class="pb-3 text-right">Total Value</th></tr>`;
+                list.forEach(i => {
+                    let s = parseInt(i.stock);
+                    tbody.innerHTML += `<tr class="border-b border-gray-700/50 hover:bg-[#334155] transition-colors"><td class="py-3 text-white font-medium">${i.name}</td><td class="py-3 text-gray-400 text-center">${parseFloat(i.price).toFixed(2)}</td><td class="py-3 text-center font-bold ${s<=5?'text-red-400':'text-gray-300'}">${s}</td><td class="py-3 text-green-400 font-bold text-right">${(s*parseFloat(i.price)).toLocaleString()}</td></tr>`;
+                });
+            }
+        }
+
+        const date = new Date();
+        document.getElementById('startDate').value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
+        document.getElementById('endDate').value = date.toISOString().split('T')[0];
+        loadDatabaseData();
+    </script>
+</body>
+</html>
